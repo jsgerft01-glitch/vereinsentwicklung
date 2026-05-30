@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JSG Erft 01 – Vereinsentwicklung</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap');
+
+  :root {
+    --green: #1a7c3e;
+    --green-light: #25a355;
+    --green-pale: #e8f5ee;
+    --white: #f9faf8;
+    --dark: #0e1a14;
+    --gray: #5a6860;
+    --accent: #f0b429;
+    --border: #d0e4d8;
+    --red: #dc2626;
+    --orange: #ea580c;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #f0f3f1; color: var(--dark); font-family: 'DM Sans', sans-serif; font-size: 15px; line-height: 1.6; min-height: 100vh; }
+
+  /* HEADER */
+  header { background: var(--dark); color: white; padding: 24px 16px 16px; position: relative; overflow: hidden; }
+  header::before { content: '⚽'; font-size: 120px; position: absolute; right: -10px; top: -10px; opacity: 0.06; line-height: 1; pointer-events: none; }
+  header h1 { font-family: 'Bebas Neue', sans-serif; font-size: 1.9rem; letter-spacing: 2px; color: var(--accent); line-height: 1; }
+  header p { color: #90a898; font-size: 11px; margin-top: 3px; font-weight: 300; }
+  .stats { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+  .stat { background: rgba(255,255,255,0.07); border-radius: 7px; padding: 6px 11px; font-size: 10px; color: #a0b8a8; }
+  .stat span { display: block; font-family: 'Bebas Neue', sans-serif; font-size: 17px; color: var(--accent); line-height: 1; }
+  .progress-wrap { background: var(--dark); padding: 0 16px 10px; }
+  .progress-bar { height: 3px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--green), var(--accent)); border-radius: 2px; transition: width 0.4s; width: 0%; }
+  .progress-label { font-size: 10px; color: #607060; text-align: right; padding-top: 4px; }
+
+  /* MAIN */
+  .main { padding: 10px; max-width: 760px; margin: 0 auto; }
+
+  /* ADD SECTION BTN */
+  .add-section-btn { display: flex; align-items: center; gap: 8px; width: 100%; padding: 10px 14px; border: 2px dashed var(--border); border-radius: 10px; background: white; color: var(--gray); font-family: 'DM Sans', sans-serif; font-size: 13px; cursor: pointer; margin-bottom: 14px; transition: all 0.15s; }
+  .add-section-btn:hover { border-color: var(--green); color: var(--green); background: var(--green-pale); }
+
+  /* SECTION */
+  .section { margin-bottom: 10px; border-radius: 10px; overflow: visible; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
+  .section-header { display: flex; align-items: center; gap: 9px; padding: 11px 13px; background: var(--dark); cursor: pointer; user-select: none; transition: background 0.15s; border-radius: 10px 10px 0 0; }
+  .section.closed .section-header { border-radius: 10px; }
+  .section-header:hover { background: #1c2820; }
+  .section-icon { font-size: 16px; width: 30px; height: 30px; background: rgba(255,255,255,0.08); border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .section-title { font-family: 'Bebas Neue', sans-serif; font-size: 0.95rem; letter-spacing: 1.5px; color: white; flex: 1; }
+  .section-count { font-size: 10px; color: #607868; background: rgba(255,255,255,0.07); padding: 2px 7px; border-radius: 8px; }
+  .section-chevron { color: #506050; font-size: 11px; transition: transform 0.22s; }
+  .section.open .section-chevron { transform: rotate(180deg); }
+  .section-delete { background: none; border: none; color: #503830; font-size: 14px; cursor: pointer; padding: 2px 4px; border-radius: 4px; opacity: 0.6; }
+  .section-delete:hover { opacity: 1; color: var(--red); }
+  .section-body { background: white; display: none; border-radius: 0 0 10px 10px; overflow: hidden; }
+  .section.open .section-body { display: block; }
+
+  /* ADD ITEM BTN */
+  .add-item-btn { display: flex; align-items: center; gap: 7px; width: 100%; padding: 9px 13px; border: none; border-top: 1px dashed var(--border); background: #f8faf8; color: #90a898; font-family: 'DM Sans', sans-serif; font-size: 12px; cursor: pointer; transition: all 0.12s; }
+  .add-item-btn:hover { background: var(--green-pale); color: var(--green); }
+
+  /* ITEM */
+  .item { border-bottom: 1px solid var(--border); }
+  .item:last-of-type { border-bottom: none; }
+  .item-header { display: flex; align-items: flex-start; gap: 9px; padding: 10px 13px; cursor: pointer; transition: background 0.1s; user-select: none; }
+  .item-header:hover { background: #f5fbf7; }
+  .item-check { width: 17px; height: 17px; border-radius: 4px; border: 2px solid var(--border); flex-shrink: 0; margin-top: 3px; display: flex; align-items: center; justify-content: center; transition: all 0.16s; background: white; font-size: 10px; }
+  .item.all-done > .item-header .item-check { background: var(--green); border-color: var(--green); color: white; }
+  .item.partial > .item-header .item-check { background: #d4edda; border-color: var(--green-light); color: var(--green); font-size: 8px; }
+  .item-label { flex: 1; min-width: 0; }
+  .item-title { font-weight: 600; font-size: 13px; color: var(--dark); line-height: 1.3; }
+  .item.all-done > .item-header .item-title { text-decoration: line-through; color: #aaa; }
+  .item-subtitle { font-size: 11px; color: var(--gray); font-weight: 300; margin-top: 1px; }
+  .item-meta-row { display: flex; align-items: center; gap: 6px; margin-top: 4px; flex-wrap: wrap; }
+  .meta-tag { display: inline-flex; align-items: center; gap: 3px; font-size: 10px; padding: 2px 7px; border-radius: 8px; font-weight: 500; }
+  .meta-person { background: #e0f0ff; color: #1a5a9a; }
+  .meta-date { background: #fff3e0; color: #b45309; }
+  .meta-date.overdue { background: #fee2e2; color: var(--red); }
+  .meta-date.soon { background: #fef3c7; color: #b45309; }
+  .item-right { display: flex; align-items: center; gap: 5px; flex-shrink: 0; margin-top: 1px; }
+  .prio { font-size: 9px; padding: 2px 6px; border-radius: 7px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; }
+  .prio-hoch { background: #fee2e2; color: #b91c1c; }
+  .prio-mittel { background: #fef3c7; color: #b45309; }
+  .prio-niedrig { background: #e8f5ee; color: var(--green); }
+  .expand-btn { font-size: 10px; color: #90a898; transition: transform 0.2s; padding: 2px; }
+  .item.open .expand-btn { transform: rotate(180deg); }
+  .item-actions { display: flex; gap: 4px; }
+  .icon-btn { background: none; border: none; cursor: pointer; font-size: 13px; padding: 2px 4px; border-radius: 4px; opacity: 0.5; transition: opacity 0.15s; }
+  .icon-btn:hover { opacity: 1; }
+
+  /* SUBITEMS */
+  .subitems { display: none; background: #fafcfa; }
+  .item.open .subitems { display: block; }
+
+  .subitem { display: flex; align-items: flex-start; gap: 9px; padding: 8px 13px 8px 36px; border-top: 1px solid #eef3ee; transition: background 0.1s; }
+  .subitem:hover { background: #f0f8f2; }
+  .subitem.done { opacity: 0.42; }
+  .subitem.done .sub-text { text-decoration: line-through; }
+  .sub-check { width: 14px; height: 14px; border-radius: 3px; border: 1.5px solid #c8dece; flex-shrink: 0; margin-top: 3px; display: flex; align-items: center; justify-content: center; font-size: 8px; background: white; transition: all 0.14s; cursor: pointer; }
+  .subitem.done .sub-check { background: var(--green-light); border-color: var(--green-light); color: white; }
+  .sub-body { flex: 1; min-width: 0; }
+  .sub-text { font-size: 12px; color: #2a3a2e; cursor: pointer; }
+  .sub-note { font-size: 10px; color: #8aaa90; font-style: italic; margin-top: 1px; font-weight: 300; }
+  .sub-meta-row { display: flex; align-items: center; gap: 5px; margin-top: 3px; flex-wrap: wrap; }
+  .sub-actions { display: flex; gap: 2px; flex-shrink: 0; opacity: 0.4; transition: opacity 0.15s; }
+  .subitem:hover .sub-actions { opacity: 1; }
+
+  /* DETAIL PANEL */
+  .detail-panel { background: #f4f9f5; border-top: 1px solid #e0ede4; padding: 12px 13px 12px 36px; display: none; }
+  .detail-panel.open { display: block; }
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+  @media (max-width: 500px) { .detail-grid { grid-template-columns: 1fr; } }
+  .detail-field label { display: block; font-size: 10px; font-weight: 600; color: var(--gray); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; }
+  .detail-field input, .detail-field textarea, .detail-field select {
+    width: 100%; padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px;
+    font-family: 'DM Sans', sans-serif; font-size: 12px; color: var(--dark);
+    background: white; transition: border 0.15s; resize: vertical;
+  }
+  .detail-field input:focus, .detail-field textarea:focus, .detail-field select:focus { outline: none; border-color: var(--green); }
+  .detail-field textarea { min-height: 56px; }
+  .detail-field-full { grid-column: 1 / -1; }
+  .attachments-list { margin-top: 4px; }
+  .attachment-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--green); padding: 3px 0; }
+  .attachment-item a { color: var(--green); text-decoration: none; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .attachment-item a:hover { text-decoration: underline; }
+  .attachment-item button { background: none; border: none; color: #ccc; cursor: pointer; font-size: 12px; }
+  .attachment-item button:hover { color: var(--red); }
+  .file-input-wrap { display: flex; align-items: center; gap: 6px; margin-top: 6px; }
+  .file-input-wrap input[type=file] { display: none; }
+  .file-upload-btn { padding: 5px 10px; background: white; border: 1.5px solid var(--border); border-radius: 6px; font-size: 11px; color: var(--gray); cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.12s; }
+  .file-upload-btn:hover { border-color: var(--green); color: var(--green); }
+  .url-input-row { display: flex; gap: 6px; margin-top: 6px; }
+  .url-input-row input { flex: 1; padding: 5px 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 11px; font-family: 'DM Sans', sans-serif; }
+  .url-add-btn { padding: 5px 10px; background: var(--green); color: white; border: none; border-radius: 6px; font-size: 11px; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+  .save-detail-btn { padding: 6px 14px; background: var(--green); color: white; border: none; border-radius: 7px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; margin-top: 4px; }
+  .save-detail-btn:hover { background: var(--green-light); }
+
+  /* ITEM DETAIL (main item detail panel) */
+  .item-detail { background: #f4f9f5; border-top: 1px solid #e0ede4; padding: 12px 13px; display: none; }
+  .item-detail.open { display: block; }
+
+  /* ADD SUBITEM */
+  .add-sub-btn { display: flex; align-items: center; gap: 6px; padding: 7px 13px 7px 36px; border: none; border-top: 1px dashed #deedde; background: transparent; color: #90a898; font-family: 'DM Sans', sans-serif; font-size: 11px; cursor: pointer; width: 100%; transition: all 0.12s; }
+  .add-sub-btn:hover { background: var(--green-pale); color: var(--green); }
+
+  /* MODAL */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 16px; }
+  .modal-overlay.hidden { display: none; }
+  .modal { background: white; border-radius: 12px; padding: 20px; width: 100%; max-width: 420px; box-shadow: 0 8px 32px rgba(0,0,0,0.18); }
+  .modal h3 { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 1px; color: var(--dark); margin-bottom: 14px; }
+  .modal label { display: block; font-size: 11px; font-weight: 600; color: var(--gray); text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 3px; margin-top: 10px; }
+  .modal input, .modal select, .modal textarea {
+    width: 100%; padding: 8px 10px; border: 1.5px solid var(--border); border-radius: 7px;
+    font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--dark); background: white;
+  }
+  .modal input:focus, .modal select:focus, .modal textarea:focus { outline: none; border-color: var(--green); }
+  .modal textarea { min-height: 64px; resize: vertical; }
+  .modal-btns { display: flex; gap: 8px; margin-top: 16px; justify-content: flex-end; }
+  .btn-cancel { padding: 8px 16px; border: 1.5px solid var(--border); border-radius: 7px; background: white; color: var(--gray); font-family: 'DM Sans', sans-serif; font-size: 13px; cursor: pointer; }
+  .btn-save { padding: 8px 18px; background: var(--green); color: white; border: none; border-radius: 7px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .btn-save:hover { background: var(--green-light); }
+
+  footer { text-align: center; padding: 18px; font-size: 10px; color: #bbb; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Vereinsentwicklung</h1>
+  <p>JSG Erft 01 Euskirchen · Klicke Unterpunkte zum Abhaken · ▾ zum Aufklappen · ✏️ für Details</p>
+  <div class="stats">
+    <div class="stat"><span id="total-count">0</span>Themen</div>
+    <div class="stat"><span id="done-items">0</span>Erledigt</div>
+    <div class="stat"><span id="sub-total">0</span>Unterpunkte</div>
+    <div class="stat"><span id="sub-done">0</span>UP erledigt</div>
+    <div class="stat"><span id="overdue-count">0</span>Überfällig</div>
+  </div>
+</header>
+<div class="progress-wrap">
+  <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+  <div class="progress-label" id="progress-label">0 % abgeschlossen</div>
+</div>
+
+<div class="main" id="app"></div>
+
+<!-- MODAL: Add Section -->
+<div class="modal-overlay hidden" id="modal-section">
+  <div class="modal">
+    <h3>Neuen Bereich hinzufügen</h3>
+    <label>Icon (Emoji)</label>
+    <input id="ms-icon" type="text" value="📋" maxlength="2">
+    <label>Bezeichnung</label>
+    <input id="ms-title" type="text" placeholder="z.B. Schiedsrichterwesen">
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal('modal-section')">Abbrechen</button>
+      <button class="btn-save" onclick="saveSection()">Hinzufügen</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Add Item -->
+<div class="modal-overlay hidden" id="modal-item">
+  <div class="modal">
+    <h3>Neuen Hauptpunkt hinzufügen</h3>
+    <label>Titel</label>
+    <input id="mi-title" type="text" placeholder="z.B. Neue Satzungsregelung">
+    <label>Kurzbeschreibung</label>
+    <input id="mi-sub" type="text" placeholder="Worum geht es?">
+    <label>Priorität</label>
+    <select id="mi-prio">
+      <option value="hoch">🔴 Hoch</option>
+      <option value="mittel" selected>🟡 Mittel</option>
+      <option value="niedrig">🟢 Niedrig</option>
+    </select>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal('modal-item')">Abbrechen</button>
+      <button class="btn-save" onclick="saveItem()">Hinzufügen</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Add Subitem -->
+<div class="modal-overlay hidden" id="modal-sub">
+  <div class="modal">
+    <h3>Neuen Unterpunkt hinzufügen</h3>
+    <label>Aufgabe</label>
+    <input id="msub-text" type="text" placeholder="z.B. Satzung beim Notar hinterlegen">
+    <label>Hinweis (optional)</label>
+    <input id="msub-note" type="text" placeholder="z.B. Frist beachten">
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal('modal-sub')">Abbrechen</button>
+      <button class="btn-save" onclick="saveSub()">Hinzufügen</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── DATA ───────────────────────────────────────────────
+const DATA = [
+  { icon:'🏛️', title:'Vereinsorganisation & Struktur', items:[
+    { title:'Klare Vorstandsstruktur', sub:'Wer macht was – schriftlich festhalten', prio:'hoch',
+      subs:[
+        {text:'Aufgabenverteilung im Vorstand schriftlich festlegen', note:'Wer ist für welchen Bereich verantwortlich?'},
+        {text:'Stellvertretungen für alle Funktionen benennen', note:'Kein Single Point of Failure'},
+        {text:'Regelmäßige Vorstandssitzungen mit Protokoll', note:'Mindestens einmal im Quartal'},
+        {text:'Zuständigkeitsliste aushängen / digital teilen', note:'Alle wissen, an wen sie sich wenden'},
+      ]},
+    { title:'Satzung & Ordnungen', sub:'Rechtliche Grundlagen aktuell halten', prio:'hoch',
+      subs:[
+        {text:'Vereinssatzung auf Aktualität prüfen', note:'Mindestens alle 3 Jahre'},
+        {text:'Jugendordnung vorhanden und gültig?', note:'Pflicht nach DFB-Richtlinien'},
+        {text:'Finanzordnung aktualisieren', note:'Ausgabelimits, Zeichnungsberechtigungen'},
+        {text:'Schiedsgerichtsordnung / Beschwerdeweg klar', note:'Für Konflikte im Verein'},
+      ]},
+    { title:'Mitgliederversammlung', sub:'Aktiv und transparent gestalten', prio:'mittel',
+      subs:[
+        {text:'Einladungsfristen einhalten (i.d.R. 14 Tage)', note:'Satzungspflicht prüfen'},
+        {text:'Jahresbericht aufbereiten und präsentieren', note:'Sportlich, finanziell, organisatorisch'},
+        {text:'Abstimmungen dokumentieren (Protokoll)', note:'Unterschrieben und archiviert'},
+        {text:'Mitglieder aktiv zur Teilnahme motivieren', note:'z.B. kleines Rahmenprogramm'},
+      ]},
+    { title:'Nachfolgeplanung', sub:'Ehrenamtliche frühzeitig einarbeiten', prio:'mittel',
+      subs:[
+        {text:'Potenzielle Nachfolger für alle Ämter identifizieren', note:''},
+        {text:'Einarbeitungszeit mindestens 1 Saison einplanen', note:'Wissenstransfer sicherstellen'},
+        {text:'Amtsübergabe strukturiert dokumentieren', note:'Übergabeprotokoll, Zugänge, Kontakte'},
+      ]},
+    { title:'Gemeinnützigkeit & Steuer', sub:'Status sichern und Vorteile nutzen', prio:'niedrig',
+      subs:[
+        {text:'Freistellungsbescheid aktuell halten', note:'Alle 3 Jahre beim Finanzamt beantragen'},
+        {text:'Mittelverwendung korrekt dokumentieren', note:'Keine Rücklagen über gesetzlichem Limit'},
+        {text:'Spendenquittungen korrekt ausstellen', note:'Vorlagen prüfen'},
+        {text:'Aufwandsentschädigungen (Übungsleiterpauschale) nutzen', note:'Bis 3.000 € / Jahr steuerfrei'},
+      ]},
+  ]},
+  { icon:'⚽', title:'Jugendarbeit & Sportliche Entwicklung', items:[
+    { title:'Einheitliches Trainingskonzept U7–U19', sub:'Spielphilosophie und Entwicklungsziele', prio:'hoch',
+      subs:[
+        {text:'Spielphilosophie für alle Jahrgänge schriftlich festlegen', note:'Pressing, Spielaufbau, Werte'},
+        {text:'Altersgerechte Trainingsinhalte je Altersgruppe definieren', note:'DFB-Leitfaden als Basis'},
+        {text:'Trainer-Handbuch / Konzeptpapier erstellen', note:'Verbindlich für alle Teams'},
+        {text:'Jahrgangstrainer-Runden regelmäßig einberufen', note:'Austausch, Abstimmung, Einheit'},
+        {text:'Spielbeobachtung und Feedback-Kultur etablieren', note:'Gegenseitig hospitieren'},
+      ]},
+    { title:'Trainer gewinnen & halten', sub:'Qualifikation, Bindung, Wertschätzung', prio:'hoch',
+      subs:[
+        {text:'Offene Trainer-Stellen aktiv ausschreiben', note:'FVM, Social Media, Netzwerk'},
+        {text:'Lizenzförderung für Trainer anbieten', note:'Kosten übernehmen oder bezuschussen'},
+        {text:'Jährliches Trainer-Gespräch führen', note:'Feedback, Wünsche, Perspektiven'},
+        {text:'Wertschätzung im Alltag zeigen', note:'Dank, kleine Gesten, öffentliche Anerkennung'},
+        {text:'Co-Trainer-System in allen Teams etablieren', note:'Entlastung und Nachwuchs für Haupttrainer'},
+      ]},
+    { title:'Talentförderung & Übergang Senioren', sub:'Brücke zwischen A-Jugend und Erwachsenen', prio:'hoch',
+      subs:[
+        {text:'Talente frühzeitig identifizieren und gezielt fördern', note:''},
+        {text:'Probetrainings bei höherklassigen Vereinen unterstützen', note:'Offen kommunizieren'},
+        {text:'Übergang A-Jugend → Senioren aktiv begleiten', note:'Doppelspielrecht nutzen'},
+        {text:'Rückkehrer aus anderen Vereinen willkommen heißen', note:''},
+      ]},
+    { title:'Elternkommunikation', sub:'Eltern als Partner, nicht als Problem', prio:'mittel',
+      subs:[
+        {text:'Saisonstart-Elternabend je Team durchführen', note:'Erwartungen klären, Trainer vorstellen'},
+        {text:'Spieltag-Verhaltensregeln kommunizieren', note:'Schreien, Schiedsrichterkritik, Vorbildfunktion'},
+        {text:'Fester Ansprechpartner pro Team', note:'Trainer oder Teammanager'},
+        {text:'Eltern als Helfer einbinden', note:'Fahrdienste, Kiosk, Turniere'},
+      ]},
+    { title:'Spielerregistrierung & Passwesen', sub:'Fristen, DFBnet, FVM-Compliance', prio:'mittel',
+      subs:[
+        {text:'Passwesen-Verantwortlichen benennen', note:'Eine Person zentral zuständig'},
+        {text:'Spielerregistrierungen rechtzeitig vor Saisonstart', note:'Keine Hektik im August'},
+        {text:'Wechselbewegungen und Fristen im Kalender', note:'FVM-Durchführungsbestimmungen kennen'},
+        {text:'DFBnet-Zugänge für alle Trainer vorhanden', note:'Spielberichte zeitnah einreichen'},
+        {text:'Schiedsrichterregistrierung / Absagen fristgerecht', note:'AM-Online-Einträge vermeiden'},
+      ]},
+    { title:'Mädchenfußball & Inklusion', sub:'Neue Zielgruppen aktiv erschließen', prio:'niedrig',
+      subs:[
+        {text:'Mädchenteam aufbauen oder kooperieren', note:'JSG-Partner anfragen'},
+        {text:'Inklusive Angebote prüfen (Freizeitfußball, Mixed)', note:''},
+        {text:'Sichtbarkeit in Schulen erhöhen', note:'Kooperationen, Schnupperkurse'},
+      ]},
+  ]},
+  { icon:'🤝', title:'Ehrenamt & Mitgliederbindung', items:[
+    { title:'Ehrenamtliche wertschätzen', sub:'Engagement sichtbar machen', prio:'hoch',
+      subs:[
+        {text:'Regelmäßiger öffentlicher Dank (Website, Social Media)', note:''},
+        {text:'Jahresehrung für langjährige Ehrenamtliche', note:'Urkunde, Präsent, Erwähnung in MV'},
+        {text:'Aufwandsentschädigungen wo möglich zahlen', note:'Übungsleiterpauschale ausschöpfen'},
+        {text:'Auslagenerstattung schnell und unkompliziert', note:'Kein Ehrenamtlicher bleibt auf Kosten sitzen'},
+      ]},
+    { title:'Neue Mitglieder gewinnen & integrieren', sub:'Willkommenskultur leben', prio:'hoch',
+      subs:[
+        {text:'Probetraining unkompliziert anbieten', note:'Keine bürokratischen Hürden'},
+        {text:'Willkommensmappe für neue Familien', note:'Ansprechpartner, Trainingszeiten, Regeln'},
+        {text:'Patensystem für neue Spieler einführen', note:'Älterer Spieler begleitet Neuen'},
+        {text:'Beitrittsformular digital verfügbar', note:'Website, WhatsApp, direkt beim Training'},
+      ]},
+    { title:'Aufgaben verteilen & entlasten', sub:'Viele Schultern tragen mehr', prio:'mittel',
+      subs:[
+        {text:'Aufgabenliste für jedes Team erstellen', note:'Zeugwart, Fahrdienstkoordinator, Kassierer'},
+        {text:'Überarbeitung von Einzelpersonen aktiv ansprechen', note:'Früherkennung vermeidet Burnout'},
+        {text:'Neue Helfer bei Spielen und Turnieren gezielt ansprechen', note:''},
+      ]},
+    { title:'Vereinsfeste & Gemeinschaft', sub:'Zusammenhalt durch gemeinsame Erlebnisse', prio:'niedrig',
+      subs:[
+        {text:'Saisonabschlussfeier je Jahrgang', note:''},
+        {text:'Vereinsturnier / internes Turnier veranstalten', note:'Alle Jahrgänge, familiäre Atmosphäre'},
+        {text:'Weihnachtsfeier oder Jahresabschluss-Event', note:''},
+        {text:'Gemeinsame Auswärtsfahrten zu Spielen', note:'z.B. U17, U19'},
+      ]},
+  ]},
+  { icon:'💰', title:'Finanzen & Förderungen', items:[
+    { title:'Jahreshaushalt planen & einhalten', sub:'Transparenz und Kontrolle', prio:'hoch',
+      subs:[
+        {text:'Haushaltsplan vor Saisonstart aufstellen', note:'Alle Ausgaben schätzen und planen'},
+        {text:'Einnahmen und Ausgaben monatlich abgleichen', note:'Keine Überraschungen am Jahresende'},
+        {text:'Rücklagen für Großanschaffungen bilden', note:'z.B. Trikots, Ausstattung, Platzpflege'},
+        {text:'Kassenprüfung strukturiert vorbereiten', note:'Belege, Kontoauszüge, Quittungen'},
+      ]},
+    { title:'Sponsoren gewinnen & pflegen', sub:'Langfristige Partnerschaften aufbauen', prio:'hoch',
+      subs:[
+        {text:'Sponsoren-Mappe / Präsentation erstellen', note:'Was bietet der Verein? Reichweite, Sichtbarkeit'},
+        {text:'Lokale Unternehmen systematisch ansprechen', note:'Persönlich, nicht per Massenmail'},
+        {text:'Gegenleistungen klar definieren', note:'Trikot-Logo, Banner, Social-Media-Erwähnungen'},
+        {text:'Sponsor-Dankeschön mindestens einmal jährlich', note:'Einladung zum Spiel, kleines Präsent'},
+        {text:'Sponsorenverträge schriftlich abschließen', note:''},
+      ]},
+    { title:'Fördermittel & Zuschüsse nutzen', sub:'Geld liegt oft auf der Straße', prio:'mittel',
+      subs:[
+        {text:'NRW Sportpauschale beim Kreis beantragen', note:'Jährlich, Fristen beachten'},
+        {text:'Stadtzuschüsse Euskirchen prüfen', note:'Sportförderrichtlinie der Stadt'},
+        {text:'DOSB- und LSB-Förderprogramme recherchieren', note:'z.B. Prävention, Integration, Digitalisierung'},
+        {text:'Regionale Stiftungen und Fonds anfragen', note:'Kreissparkasse, Volksbank etc.'},
+        {text:'EU-Förderung für Jugendsport prüfen (Erasmus+ Sport)', note:''},
+      ]},
+    { title:'Beitragsstruktur überprüfen', sub:'Fair, auskömmlich und transparent', prio:'mittel',
+      subs:[
+        {text:'Beiträge regelmäßig an Kosten anpassen', note:'Keine jahrelange Stagnation'},
+        {text:'Geschwisterrabatt und Sozialstaffel einführen', note:'Niemanden ausschließen'},
+        {text:'SEPA-Lastschrift für alle Mitglieder', note:'Manuelle Einzüge abschaffen'},
+        {text:'Beitragsrückstände konsequent verfolgen', note:'Freundlich aber klar'},
+      ]},
+    { title:'Zusatzeinnahmen erschließen', sub:'Turnier, Kiosk, Merchandise', prio:'niedrig',
+      subs:[
+        {text:'Jahresturnier organisieren', note:'Einnahmen durch Startgebühren, Kiosk'},
+        {text:'Kioskbetrieb an Spieltagen optimieren', note:'Ehrenamtliche einbinden'},
+        {text:'Vereins-Merchandise (Schals, Hoodies, Aufkleber)', note:''},
+        {text:'Bandenwerbung am Vereinsplatz vermarkten', note:''},
+      ]},
+  ]},
+  { icon:'📢', title:'Kommunikation & Außenwirkung', items:[
+    { title:'Website & Social Media', sub:'Professioneller Außenauftritt', prio:'hoch',
+      subs:[
+        {text:'Website aktuell halten (Trainer, Spielzeiten, Ergebnisse)', note:''},
+        {text:'Instagram-Account aktiv bespielen', note:'Spielfotos, Ergebnisse, Vereinsleben'},
+        {text:'Verantwortlichen für Social Media benennen', note:'Nicht alles am Geschäftsführer hängen'},
+        {text:'Fotorechte / DSGVO bei Fotos beachten', note:'Einwilligung einholen, Minderjährige schützen'},
+        {text:'FuPa-Profil des Vereins pflegen', note:'Ergebnisse, Kader, Spielberichte'},
+      ]},
+    { title:'Interne Kommunikation', sub:'Klare Kanäle, weniger Chaos', prio:'mittel',
+      subs:[
+        {text:'WhatsApp-Gruppen-Struktur definieren', note:'Trainer-Kanal, Eltern-Kanal, Vorstand'},
+        {text:'Wichtige Infos immer auch per E-Mail', note:'Nicht jeder liest WhatsApp zuverlässig'},
+        {text:'Saisonkalender an alle Teams verteilen', note:'Spieltage, Schulferien, Turniere, Termine'},
+        {text:'Trainer-Newsletter monatlich', note:'Was gibt es Neues vom Verein?'},
+      ]},
+    { title:'Regionales Image stärken', sub:'In der Stadt sichtbar sein', prio:'mittel',
+      subs:[
+        {text:'Schulkooperationen mit Grundschulen in Euskirchen', note:'Schnupperkurse, Kooperationsvertrag'},
+        {text:'Kontakt zur Lokalpresse pflegen', note:'Ergebnisse einsenden, Pressemitteilungen'},
+        {text:'Kooperationen mit Kitas für Bambini', note:'Frühbindung an den Verein'},
+        {text:'Stadtfeste und lokale Veranstaltungen nutzen', note:'Präsenz zeigen, Flyer verteilen'},
+      ]},
+    { title:'Vereinsidentität & Corporate Design', sub:'Einheitlich und wiedererkennbar', prio:'niedrig',
+      subs:[
+        {text:'Corporate Design konsequent einsetzen', note:'Farben & Montserrat-Font'},
+        {text:'Vereinslogo in allen Materialien korrekt verwenden', note:'Kein verzerrtes Logo auf Flyern'},
+        {text:'Briefvorlagen und E-Mail-Signaturen für alle', note:''},
+        {text:'Vereinschronik fortschreiben', note:'Fotos, Ergebnisse, besondere Momente archivieren'},
+      ]},
+  ]},
+  { icon:'🏟️', title:'Infrastruktur & Ausstattung', items:[
+    { title:'Trainings- & Spielstättenpflege', sub:'Der Platz als Visitenkarte', prio:'hoch',
+      subs:[
+        {text:'Pflegeplan für Rasenplatz erstellen', note:'Mähen, Düngen, Belüften – wer macht es wann?'},
+        {text:'Schäden zeitnah der Stadt melden', note:'Mängelanzeige schriftlich dokumentieren'},
+        {text:'Belegungszeiten mit der Stadt koordinieren', note:'Alle Jahrgänge berücksichtigen'},
+        {text:'Trainingsplatz für Kleine (Bambini) sichern', note:'Kleinfeldmarkierungen, Minitore'},
+      ]},
+    { title:'Material & Ausrüstung', sub:'Inventur, Ausgabe, Pflege', prio:'mittel',
+      subs:[
+        {text:'Materialinventur einmal jährlich durchführen', note:'Bälle, Trikots, Leibchen, Hütchen, Tore'},
+        {text:'Ausgabesystem für Trikots', note:'Verluste reduzieren'},
+        {text:'Trikotsatz-Rhythmus planen', note:''},
+        {text:'Zeugwart pro Team benennen', note:'Verantwortung delegieren'},
+      ]},
+    { title:'Umkleide & Sanitäranlagen', sub:'Hygiene und Ordnung als Standard', prio:'mittel',
+      subs:[
+        {text:'Reinigungsplan mit festen Zuständigkeiten', note:'Wer reinigt wann nach Training/Spiel?'},
+        {text:'Hygienemittel immer vorrätig halten', note:'Seife, Toilettenpapier, Desinfektionsmittel'},
+        {text:'Schlüsselverwaltung zentral regeln', note:'Wer hat Schlüssel zu was?'},
+      ]},
+    { title:'Digitale Verwaltung', sub:'Weniger Papier, mehr Überblick', prio:'niedrig',
+      subs:[
+        {text:'Vereinsverwaltungssoftware einsetzen', note:'z.B. Vereinsflieger, ClubDesk, Vereinonline'},
+        {text:'Spielberichte konsequent über DFBnet einreichen', note:'Fristgerecht, vollständig'},
+        {text:'Schiedsrichteransetzung digital koordinieren', note:''},
+        {text:'Cloud-Ablage für alle Vereinsdokumente', note:'Satzung, Verträge, Korrespondenz'},
+      ]},
+  ]},
+  { icon:'🛡️', title:'Sicherheit, Recht & Soziales', items:[
+    { title:'Kinderschutz', sub:'Gesetzliche Pflicht und Vertrauensbasis', prio:'hoch',
+      subs:[
+        {text:'Erweitertes Führungszeugnis für alle Trainer & Betreuer', note:'Vorlage und Kopie archivieren'},
+        {text:'Kinderschutzkonzept schriftlich erarbeiten', note:'DFB-Vorlage nutzen'},
+        {text:'Ansprechpartner für Kinderschutz benennen', note:'Kein Einzelkämpfer'},
+        {text:'Trainer zu Thema Kinderschutz schulen', note:'FVM bietet Fortbildungen an'},
+      ]},
+    { title:'Erste Hilfe & Notfallmanagement', sub:'Vorbereitet sein, wenn es drauf ankommt', prio:'hoch',
+      subs:[
+        {text:'Ersthelfer in jedem Team ausgebildet', note:'Auffrischungskurs alle 2 Jahre'},
+        {text:'Erste-Hilfe-Kasten am Platz vollständig und zugänglich', note:'Monatlich prüfen'},
+        {text:'Defibrillator vorhanden und Trainer geschult', note:''},
+        {text:'Notfallnummern und Adresse des Platzes sichtbar aushängen', note:''},
+      ]},
+    { title:'Datenschutz (DSGVO)', sub:'Rechtssicher im Vereinsalltag', prio:'mittel',
+      subs:[
+        {text:'Einwilligungserklärungen für Fotos & Newsletter', note:'Besonders bei Minderjährigen'},
+        {text:'Mitgliederlisten nicht unkontrolliert weitergeben', note:''},
+        {text:'Datenschutzbeauftragten oder Ansprechpartner benennen', note:''},
+        {text:'Datenschutzerklärung auf Website aktuell halten', note:''},
+      ]},
+    { title:'Fair Play & Verhaltenskodex', sub:'Klare Regeln für alle Beteiligten', prio:'mittel',
+      subs:[
+        {text:'Verhaltenskodex für Spieler, Trainer, Eltern erstellen', note:'Kurz, klar, verständlich'},
+        {text:'Konsequenzen bei Verstößen definieren', note:'Nicht jede Entscheidung neu erfinden'},
+        {text:'Schiedsrichter respektieren – Botschaft aktiv kommunizieren', note:'Null Toleranz für Beleidigungen'},
+        {text:'Konfliktlösungsweg klar kommunizieren', note:'An wen wende ich mich bei Problemen?'},
+      ]},
+    { title:'Versicherungsschutz', sub:'Absicherung für alle', prio:'niedrig',
+      subs:[
+        {text:'ARAG-Sportversicherung über FVM/DFB bestätigen', note:'Alle Mitglieder versichert?'},
+        {text:'Vereinshaftpflicht prüfen', note:'Schäden durch Vereinstätigkeit abgedeckt?'},
+        {text:'Unfallversicherung für Trainingsunfälle', note:''},
+        {text:'Versicherungsschutz für Turniere & Veranstaltungen', note:'Ggf. gesondert anmelden'},
+      ]},
+  ]},
+];
+
+// ─── STATE ──────────────────────────────────────────────
+// details[si][ii] = { person, dueDate, notes, urls[] }
+// details[si][ii][ssi] = { person, dueDate, notes, urls[] }
+let details = {};
+let currentModalSectionIdx = null;
+let currentModalItemIdx = null;
+
+function getDetail(si, ii, ssi) {
+  const key = ssi === undefined ? `${si}-${ii}` : `${si}-${ii}-${ssi}`;
+  if (!details[key]) details[key] = { person:'', dueDate:'', notes:'', urls:[] };
+  return details[key];
+}
+function setDetail(si, ii, ssi, obj) {
+  const key = ssi === undefined ? `${si}-${ii}` : `${si}-${ii}-${ssi}`;
+  details[key] = obj;
+}
+
+// ─── RENDER ─────────────────────────────────────────────
+const app = document.getElementById('app');
+
+function render() {
+  app.innerHTML = '';
+  DATA.forEach((section, si) => {
+    const secEl = document.createElement('div');
+    secEl.className = 'section open';
+    secEl.id = `sec-${si}`;
+
+    const itemsHtml = section.items.map((item, ii) => renderItem(si, ii, item)).join('');
+
+    secEl.innerHTML = `
+      <div class="section-header" onclick="toggleSection(${si})">
+        <div class="section-icon">${section.icon}</div>
+        <div class="section-title">${section.title}</div>
+        <div class="section-meta" style="display:flex;align-items:center;gap:6px;">
+          <div class="section-count" id="scount-${si}"></div>
+          <button class="section-delete" onclick="event.stopPropagation();deleteSection(${si})" title="Bereich löschen">🗑</button>
+          <div class="section-chevron">▾</div>
+        </div>
+      </div>
+      <div class="section-body" id="sbody-${si}">
+        ${itemsHtml}
+        <button class="add-item-btn" onclick="openAddItem(${si})">＋ Hauptpunkt hinzufügen</button>
+      </div>
+    `;
+    app.appendChild(secEl);
+  });
+
+  // Add section button
+  const addSecBtn = document.createElement('button');
+  addSecBtn.className = 'add-section-btn';
+  addSecBtn.innerHTML = '＋ Neuen Bereich hinzufügen';
+  addSecBtn.onclick = () => openModal('modal-section');
+  app.appendChild(addSecBtn);
+
+  updateAllItemStates();
+  updateStats();
+}
+
+function renderItem(si, ii, item) {
+  const prioClass = item.prio === 'hoch' ? 'prio-hoch' : item.prio === 'mittel' ? 'prio-mittel' : 'prio-niedrig';
+  const prioLabel = item.prio === 'hoch' ? 'Hoch' : item.prio === 'mittel' ? 'Mittel' : 'Niedrig';
+  const d = getDetail(si, ii);
+  const metaRow = buildMetaRow(d);
+  const subsHtml = (item.subs || []).map((s, ssi) => renderSub(si, ii, ssi, s)).join('');
+
+  return `
+    <div class="item" id="item-${si}-${ii}">
+      <div class="item-header" onclick="toggleItem(${si},${ii})">
+        <div class="item-check" id="ic-${si}-${ii}"></div>
+        <div class="item-label">
+          <div class="item-title">${item.title}</div>
+          <div class="item-subtitle">${item.sub||''}</div>
+          ${metaRow ? `<div class="item-meta-row">${metaRow}</div>` : ''}
+        </div>
+        <div class="item-right">
+          <div class="prio ${prioClass}">${prioLabel}</div>
+          <div class="item-actions">
+            <button class="icon-btn" onclick="event.stopPropagation();toggleItemDetail(${si},${ii})" title="Details bearbeiten">✏️</button>
+            <button class="icon-btn" onclick="event.stopPropagation();deleteItem(${si},${ii})" title="Löschen">🗑</button>
+          </div>
+          <div class="expand-btn">▾</div>
+        </div>
+      </div>
+      <div class="item-detail" id="idetail-${si}-${ii}">
+        ${renderDetailForm(si, ii, undefined)}
+      </div>
+      <div class="subitems" id="subs-${si}-${ii}">
+        ${subsHtml}
+        <button class="add-sub-btn" onclick="openAddSub(${si},${ii})">＋ Unterpunkt hinzufügen</button>
+      </div>
+    </div>`;
+}
+
+function renderSub(si, ii, ssi, s) {
+  const d = getDetail(si, ii, ssi);
+  const metaRow = buildMetaRow(d);
+  const doneClass = s.done ? 'done' : '';
+  return `
+    <div class="subitem ${doneClass}" id="sub-${si}-${ii}-${ssi}">
+      <div class="sub-check" onclick="toggleSub(${si},${ii},${ssi})">✓</div>
+      <div class="sub-body">
+        <div class="sub-text" onclick="toggleSub(${si},${ii},${ssi})">${s.text}</div>
+        ${s.note ? `<div class="sub-note">${s.note}</div>` : ''}
+        ${metaRow ? `<div class="sub-meta-row">${metaRow}</div>` : ''}
+        <div class="detail-panel" id="dp-${si}-${ii}-${ssi}">
+          ${renderDetailForm(si, ii, ssi)}
+        </div>
+      </div>
+      <div class="sub-actions">
+        <button class="icon-btn" onclick="toggleSubDetail(${si},${ii},${ssi})" title="Details">✏️</button>
+        <button class="icon-btn" onclick="deleteSub(${si},${ii},${ssi})" title="Löschen">🗑</button>
+      </div>
+    </div>`;
+}
+
+function renderDetailForm(si, ii, ssi) {
+  const d = getDetail(si, ii, ssi);
+  const idPfx = ssi === undefined ? `df-${si}-${ii}` : `df-${si}-${ii}-${ssi}`;
+  const urlsHtml = (d.urls||[]).map((u,ui) =>
+    `<div class="attachment-item">📎 <a href="${u.url}" target="_blank">${u.label||u.url}</a>
+     <button onclick="removeUrl('${si}','${ii}','${ssi}',${ui})">✕</button></div>`
+  ).join('');
+
+  return `
+    <div class="detail-grid">
+      <div class="detail-field">
+        <label>Zuständig</label>
+        <input id="${idPfx}-person" type="text" placeholder="z.B. Rolf Spilles" value="${escHtml(d.person||'')}">
+      </div>
+      <div class="detail-field">
+        <label>Fälligkeit</label>
+        <input id="${idPfx}-date" type="date" value="${d.dueDate||''}">
+      </div>
+      <div class="detail-field detail-field-full">
+        <label>Notiz / Umsetzung</label>
+        <textarea id="${idPfx}-notes" placeholder="Was wurde gemacht? Was ist noch offen?">${escHtml(d.notes||'')}</textarea>
+      </div>
+      <div class="detail-field detail-field-full">
+        <label>Dokumente & Links</label>
+        <div class="attachments-list" id="${idPfx}-urls">${urlsHtml}</div>
+        <div class="url-input-row">
+          <input id="${idPfx}-urlinput" type="text" placeholder="URL oder Pfad einfügen (z.B. I:\\Ablage\\Satzung.pdf)">
+          <button class="url-add-btn" onclick="addUrl('${si}','${ii}','${ssi}','${idPfx}')">＋ Hinzufügen</button>
+        </div>
+      </div>
+    </div>
+    <button class="save-detail-btn" onclick="saveDetail('${si}','${ii}','${ssi}','${idPfx}')">💾 Speichern</button>
+  `;
+}
+
+function buildMetaRow(d) {
+  if (!d) return '';
+  let parts = [];
+  if (d.person) parts.push(`<span class="meta-tag meta-person">👤 ${escHtml(d.person)}</span>`);
+  if (d.dueDate) {
+    const today = new Date(); today.setHours(0,0,0,0);
+    const due = new Date(d.dueDate);
+    const diff = Math.ceil((due - today) / 86400000);
+    let cls = '';
+    if (diff < 0) cls = 'overdue';
+    else if (diff <= 30) cls = 'soon';
+    const label = diff < 0 ? `Überfällig seit ${formatDate(d.dueDate)}` : `Fällig: ${formatDate(d.dueDate)}`;
+    parts.push(`<span class="meta-tag meta-date ${cls}">📅 ${label}</span>`);
+  }
+  if (d.urls && d.urls.length) parts.push(`<span class="meta-tag" style="background:#f0f0ff;color:#4040a0;">📎 ${d.urls.length} Dokument${d.urls.length>1?'e':''}</span>`);
+  return parts.join('');
+}
+
+function formatDate(s) {
+  if (!s) return '';
+  const [y,m,d] = s.split('-');
+  return `${d}.${m}.${y}`;
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ─── TOGGLE ─────────────────────────────────────────────
+function toggleSection(si) {
+  document.getElementById(`sec-${si}`).classList.toggle('open');
+  document.getElementById(`sec-${si}`).classList.toggle('closed');
+}
+
+function toggleItem(si, ii) {
+  document.getElementById(`item-${si}-${ii}`).classList.toggle('open');
+}
+
+function toggleItemDetail(si, ii) {
+  const el = document.getElementById(`idetail-${si}-${ii}`);
+  el.classList.toggle('open');
+  if (el.classList.contains('open') && !document.getElementById(`item-${si}-${ii}`).classList.contains('open')) {
+    document.getElementById(`item-${si}-${ii}`).classList.add('open');
+  }
+}
+
+function toggleSubDetail(si, ii, ssi) {
+  document.getElementById(`dp-${si}-${ii}-${ssi}`).classList.toggle('open');
+}
+
+function toggleSub(si, ii, ssi) {
+  const subEl = document.getElementById(`sub-${si}-${ii}-${ssi}`);
+  subEl.classList.toggle('done');
+  DATA[si].items[ii].subs[ssi].done = subEl.classList.contains('done');
+  updateItemState(si, ii);
+  updateStats();
+}
+
+// ─── ITEM STATE ─────────────────────────────────────────
+function updateAllItemStates() {
+  DATA.forEach((sec, si) => sec.items.forEach((_, ii) => updateItemState(si, ii)));
+}
+
+function updateItemState(si, ii) {
+  const itemEl = document.getElementById(`item-${si}-${ii}`);
+  if (!itemEl) return;
+  const subs = DATA[si].items[ii].subs || [];
+  const done = subs.filter(s => s.done).length;
+  const check = document.getElementById(`ic-${si}-${ii}`);
+  itemEl.classList.remove('all-done','partial');
+  if (check) check.textContent = '';
+  if (subs.length === 0) return;
+  if (done === subs.length) { itemEl.classList.add('all-done'); if(check) check.textContent='✓'; }
+  else if (done > 0) { itemEl.classList.add('partial'); if(check) check.textContent='~'; }
+}
+
+// ─── STATS ──────────────────────────────────────────────
+function updateStats() {
+  let totalItems = 0, doneItems = 0, totalSubs = 0, doneSubs = 0, overdue = 0;
+  const today = new Date(); today.setHours(0,0,0,0);
+  DATA.forEach((sec, si) => {
+    sec.items.forEach((item, ii) => {
+      totalItems++;
+      const subs = item.subs || [];
+      const d = subs.filter(s=>s.done).length;
+      if (subs.length > 0 && d === subs.length) doneItems++;
+      totalSubs += subs.length;
+      doneSubs += d;
+      // Check overdue on details
+      const det = details[`${si}-${ii}`];
+      if (det && det.dueDate && new Date(det.dueDate) < today) overdue++;
+      subs.forEach((_, ssi) => {
+        const sd = details[`${si}-${ii}-${ssi}`];
+        if (sd && sd.dueDate && new Date(sd.dueDate) < today) overdue++;
+      });
+      // section count
+      const countEl = document.getElementById(`scount-${si}`);
+      if (countEl) {
+        const secSubs = sec.items.reduce((a,it)=>a+(it.subs||[]).length,0);
+        const secDone = sec.items.reduce((a,it)=>a+(it.subs||[]).filter(s=>s.done).length,0);
+        countEl.textContent = `${secDone}/${secSubs}`;
+      }
+    });
+  });
+  document.getElementById('total-count').textContent = totalItems;
+  document.getElementById('done-items').textContent = doneItems;
+  document.getElementById('sub-total').textContent = totalSubs;
+  document.getElementById('sub-done').textContent = doneSubs;
+  document.getElementById('overdue-count').textContent = overdue;
+  const pct = totalSubs > 0 ? Math.round(doneSubs/totalSubs*100) : 0;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = `${pct} % abgeschlossen (${doneSubs} von ${totalSubs} Unterpunkten)`;
+}
+
+// ─── DETAIL SAVE ────────────────────────────────────────
+function saveDetail(si, ii, ssiStr, idPfx) {
+  const ssi = ssiStr === 'undefined' ? undefined : parseInt(ssiStr);
+  const d = getDetail(parseInt(si), parseInt(ii), ssi);
+  d.person = document.getElementById(`${idPfx}-person`)?.value || '';
+  d.dueDate = document.getElementById(`${idPfx}-date`)?.value || '';
+  d.notes = document.getElementById(`${idPfx}-notes`)?.value || '';
+  setDetail(parseInt(si), parseInt(ii), ssi, d);
+  // Re-render meta row
+  render();
+  // Flash feedback
+  alert('✓ Gespeichert');
+}
+
+function addUrl(si, ii, ssiStr, idPfx) {
+  const ssi = ssiStr === 'undefined' ? undefined : parseInt(ssiStr);
+  const input = document.getElementById(`${idPfx}-urlinput`);
+  if (!input || !input.value.trim()) return;
+  const d = getDetail(parseInt(si), parseInt(ii), ssi);
+  if (!d.urls) d.urls = [];
+  const url = input.value.trim();
+  const label = url.length > 60 ? url.substring(0,57)+'...' : url;
+  d.urls.push({ url, label });
+  setDetail(parseInt(si), parseInt(ii), ssi, d);
+  input.value = '';
+  render();
+}
+
+function removeUrl(si, ii, ssiStr, ui) {
+  const ssi = ssiStr === 'undefined' ? undefined : parseInt(ssiStr);
+  const d = getDetail(parseInt(si), parseInt(ii), ssi);
+  d.urls.splice(ui, 1);
+  render();
+}
+
+// ─── ADD / DELETE ────────────────────────────────────────
+function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+function openAddItem(si) {
+  currentModalSectionIdx = si;
+  document.getElementById('mi-title').value = '';
+  document.getElementById('mi-sub').value = '';
+  openModal('modal-item');
+}
+function saveItem() {
+  const title = document.getElementById('mi-title').value.trim();
+  if (!title) { alert('Bitte einen Titel eingeben.'); return; }
+  const prio = document.getElementById('mi-prio').value;
+  const sub = document.getElementById('mi-sub').value.trim();
+  DATA[currentModalSectionIdx].items.push({ title, sub, prio, subs: [] });
+  closeModal('modal-item');
+  render();
+}
+
+function openAddSub(si, ii) {
+  currentModalSectionIdx = si;
+  currentModalItemIdx = ii;
+  document.getElementById('msub-text').value = '';
+  document.getElementById('msub-note').value = '';
+  openModal('modal-sub');
+}
+function saveSub() {
+  const text = document.getElementById('msub-text').value.trim();
+  if (!text) { alert('Bitte eine Aufgabe eingeben.'); return; }
+  const note = document.getElementById('msub-note').value.trim();
+  DATA[currentModalSectionIdx].items[currentModalItemIdx].subs.push({ text, note, done: false });
+  closeModal('modal-sub');
+  render();
+}
+
+function saveSection() {
+  const icon = document.getElementById('ms-icon').value.trim() || '📋';
+  const title = document.getElementById('ms-title').value.trim();
+  if (!title) { alert('Bitte einen Titel eingeben.'); return; }
+  DATA.push({ icon, title, items: [] });
+  closeModal('modal-section');
+  render();
+}
+
+function deleteSection(si) {
+  if (!confirm(`Bereich „${DATA[si].title}" wirklich löschen?`)) return;
+  DATA.splice(si, 1);
+  render();
+}
+function deleteItem(si, ii) {
+  if (!confirm(`Punkt „${DATA[si].items[ii].title}" wirklich löschen?`)) return;
+  DATA[si].items.splice(ii, 1);
+  render();
+}
+function deleteSub(si, ii, ssi) {
+  if (!confirm('Unterpunkt wirklich löschen?')) return;
+  DATA[si].items[ii].subs.splice(ssi, 1);
+  render();
+}
+
+// Close modals on overlay click
+['modal-section','modal-item','modal-sub'].forEach(id => {
+  document.getElementById(id).addEventListener('click', function(e) {
+    if (e.target === this) closeModal(id);
+  });
+});
+
+// ─── INIT ────────────────────────────────────────────────
+render();
+</script>
+
+<footer>JSG Erft 01 Euskirchen · ✏️ Details & Dokumente · 📅 Fälligkeiten · ＋ Neue Punkte</footer>
+</body>
+</html>
