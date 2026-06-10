@@ -22,25 +22,19 @@
     padding: 20px;
   }
 
-  /* ── STEUERLEISTE ─────────────────────────────────── */
+  /* ── STEUERLEISTE ─────────────────────────────── */
   .controls {
-    background: var(--blau);
-    color: white;
-    padding: 12px 18px;
-    border-radius: 6px;
+    background: var(--blau); color: white;
+    padding: 12px 18px; border-radius: 6px;
     margin-bottom: 22px;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    flex-wrap: wrap;
+    display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
     max-width: 16cm;
   }
   .controls h1  { font-size: 14px; font-weight: bold; flex: 1; }
   .controls p   { font-size: 11px; opacity: .75; }
   .btn-print {
-    background: white; color: var(--blau);
-    border: none; padding: 8px 20px;
-    font-size: 13px; font-weight: bold;
+    background: white; color: var(--blau); border: none;
+    padding: 8px 20px; font-size: 13px; font-weight: bold;
     border-radius: 4px; cursor: pointer; white-space: nowrap;
   }
   .btn-print:hover { background: #e8edf8; }
@@ -52,123 +46,96 @@
   }
   .btn-clear:hover { background: rgba(255,255,255,.1); }
 
-  /* ── SCHNITTLABEL ─────────────────────────────────── */
+  /* ── SCHNITTLABEL ─────────────────────────────── */
   .cut-label {
-    font-size: 10.5px; color: #888;
-    margin-bottom: 5px;
+    font-size: 10.5px; color: #888; margin-bottom: 5px;
     display: flex; align-items: center; gap: 4px;
   }
   .cut-label::before { content: "✂"; font-size: 13px; }
 
-  /* ── POSTKARTE ────────────────────────────────────── */
+  /* ── POSTKARTE ────────────────────────────────── */
   .card {
-    width: 16cm;
-    height: 10.5cm;
+    width: 16cm; height: 10.5cm;
     background: white;
     border: 2px dashed #666;
-    position: relative;
     overflow: hidden;
-    margin-bottom: 6px;
   }
 
-  /* ── EINGABEFELDER ────────────────────────────────── */
+  /* ── EINGABEFELDER ────────────────────────────── */
   input[type=text] {
-    border: none;
-    border-bottom: 1.5px solid var(--line);
+    border: none; border-bottom: 1.5px solid var(--line);
     background: transparent;
     font-family: Arial, Helvetica, sans-serif;
-    font-size: inherit;
-    color: #222;
-    outline: none;
-    padding: 1px 2px;
-    min-width: 0;
+    font-size: inherit; color: #222;
+    outline: none; padding: 1px 2px; min-width: 0;
   }
   input[type=text]:focus     { border-bottom-color: var(--hell); background: #f0f5ff; }
   input[type=text]::placeholder { color: #ccc; font-style: italic; font-size: 10px; }
 
-  /* ══════════════════════════════════════════════════
+  textarea {
+    border: 1px solid #e8eae0; border-radius: 3px;
+    background: #fafbff;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 11px; color: #222;
+    outline: none; resize: none; padding: 6px 8px;
+    line-height: 1.6; width: 100%;
+  }
+  textarea:focus { border-color: var(--hell); background: #f0f5ff; }
+  textarea::placeholder { color: #ccc; font-style: italic; }
+
+  /* ══════════════════════════════════════════════
      SEITE 1 – VORDERSEITE
-  ══════════════════════════════════════════════════ */
+  ══════════════════════════════════════════════ */
   .front {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 10px 14px 10px 14px;
     height: 10.5cm;
+    display: flex; flex-direction: column;
+    padding: 10px 14px 10px 14px;
+    gap: 0;
   }
 
   .front-title {
-    font-size: 10.5px;
-    font-weight: bold;
-    color: var(--blau);
-    text-align: center;
+    font-size: 11px; font-weight: bold;
+    color: var(--blau); text-align: center;
     letter-spacing: .02em;
-    padding-bottom: 6px;
-    border-bottom: 1px solid #dde2f0;
+    padding-bottom: 8px;
+    border-bottom: 1.5px solid var(--blau);
+    margin-bottom: 10px;
   }
 
-  /* Mitglied | Verein – zwei Spalten */
-  .front-top {
+  .front-textarea {
+    flex: 1;
+    margin-bottom: 10px;
+  }
+  .front-textarea textarea {
+    height: 100%;
+  }
+
+  /* Unterschriften */
+  .sig-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 0 16px;
   }
-  .col-head {
-    font-size: 9.5px;
-    font-weight: bold;
-    color: var(--blau);
-    text-transform: uppercase;
-    letter-spacing: .05em;
-    margin-bottom: 4px;
-  }
-  .field-row {
-    display: flex;
-    align-items: baseline;
-    gap: 3px;
-    margin-bottom: 5px;
-    font-size: 10.5px;
-  }
-  .field-row label { font-weight: bold; white-space: nowrap; color: #333; }
-  .field-row input  { flex: 1; font-size: 10.5px; }
-
-  /* Kündigungstext */
-  .kuend-text {
-    font-size: 10.5px;
-    line-height: 1.55;
-    padding: 7px 10px;
-    background: #f7f8fc;
-    border-left: 3px solid var(--blau);
-    border-radius: 0 3px 3px 0;
-  }
-  .kuend-text strong { color: var(--blau); }
-  .kuend-text input  { font-size: 10.5px; width: 108px; }
-
-  /* Unterschriften */
-  .sig-header {
-    font-size: 9.5px; font-weight: bold;
-    color: var(--blau); text-transform: uppercase;
-    letter-spacing: .04em; margin-bottom: 5px;
-  }
-  .sig-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0 20px;
-  }
   .sig-box {
     border: 1px solid #dde2f0;
     border-radius: 3px;
-    padding: 7px 9px;
+    padding: 6px 8px;
     background: #fafbff;
   }
-  .sig-box .sig-title {
+  .sig-title {
     font-size: 9px; font-weight: bold;
     color: var(--hell); text-transform: uppercase;
-    margin-bottom: 5px;
+    letter-spacing: .04em; margin-bottom: 5px;
   }
-  .sig-box .field-row { margin-bottom: 5px; }
+  .field-row {
+    display: flex; align-items: baseline;
+    gap: 3px; margin-bottom: 4px; font-size: 10.5px;
+  }
+  .field-row label { font-weight: bold; white-space: nowrap; color: #333; }
+  .field-row input  { flex: 1; font-size: 10.5px; }
   .sig-line {
     border-bottom: 1.5px solid var(--line);
-    height: 28px; margin-top: 4px;
+    height: 24px; margin-top: 3px;
     display: flex; align-items: flex-end;
   }
   .sig-line-label {
@@ -176,94 +143,92 @@
     color: #777; padding-right: 4px;
   }
 
-  .versand-row {
-    font-size: 9.5px; color: #999;
-    display: flex; align-items: baseline; gap: 4px;
-  }
-  .versand-row input { font-size: 9.5px; width: 110px; }
-
-  /* ══════════════════════════════════════════════════
+  /* ══════════════════════════════════════════════
      SEITE 2 – RÜCKSEITE
-  ══════════════════════════════════════════════════ */
+  ══════════════════════════════════════════════ */
   .back {
+    height: 10.5cm;
     display: grid;
-    grid-template-columns: 40% 4px 1fr;
+    grid-template-columns: 42% 4px 1fr;
   }
 
   .back-left {
-    padding: 9px 10px 7px 12px;
+    padding: 12px 10px 10px 14px;
     display: flex; flex-direction: column;
   }
   .back-sep { background: var(--blau); }
   .back-right {
-    padding: 9px 12px 1.2cm 10px;
+    padding: 10px 14px 12px 10px;
     display: flex; flex-direction: column;
     justify-content: space-between;
   }
-  .back-right-top  { display: flex; flex-direction: column; }
-  .back-right-addr { display: flex; flex-direction: column; }
 
   .section-head {
-    font-size: 8.5px; font-weight: bold;
-    color: #aaa; text-transform: uppercase;
-    letter-spacing: .06em; margin-bottom: 5px;
+    font-size: 9px; font-weight: bold; color: #aaa;
+    text-transform: uppercase; letter-spacing: .06em;
+    margin-bottom: 8px;
   }
 
-  .back-left .field-row label { font-size: 9.5px; }
-  .back-left .field-row input { font-size: 10px; }
+  .back-left .field-row { margin-bottom: 8px; }
+  .back-left .field-row label { font-size: 10px; }
+  .back-left .field-row input { font-size: 11px; }
 
-  .betreff {
+  .back-left .bottom {
     margin-top: auto;
-    padding-top: 6px;
+    padding-top: 8px;
     border-top: 1px solid #eee;
   }
-  .betreff-label { font-size: 8.5px; font-weight: bold; color: #aaa; text-transform: uppercase; margin-bottom: 1px; }
-  .betreff-text  { font-size: 9px; color: #bbb; font-style: italic; margin-bottom: 4px; }
-  .einlieferung  { font-size: 9px; color: #888; font-weight: bold; display: flex; align-items: center; gap: 3px; }
+  .einlieferung {
+    font-size: 10px; color: #888; font-weight: bold;
+    display: flex; align-items: center; gap: 4px;
+  }
   .einlieferung::before { content: "⚠"; }
 
   /* Briefmarke */
-  .stamp-row { display: flex; justify-content: flex-end; margin-bottom: 7px; }
+  .stamp-row { display: flex; justify-content: flex-end; margin-bottom: 10px; }
   .stamp-box {
     width: 54px; height: 38px;
     border: 1.5px solid #ccc;
     display: flex; flex-direction: column;
     align-items: center; justify-content: center;
-    color: #ccc; font-size: 8px;
-    border-radius: 2px; gap: 1px;
+    color: #ccc; font-size: 8px; border-radius: 2px; gap: 1px;
   }
 
   /* Empfänger */
-  .empf-input {
-    border: none;
-    border-bottom: 1.5px solid var(--line);
+  .empf-row {
+    display: flex; flex-direction: column;
+    gap: 0; flex: 1; justify-content: space-evenly;
+  }
+  .empf-field {
+    display: flex; flex-direction: column;
+  }
+  .empf-field label {
+    font-size: 9px; color: #aaa; font-weight: bold;
+    margin-bottom: 1px;
+  }
+  .empf-field input {
+    border: none; border-bottom: 1.5px solid var(--line);
     background: transparent;
     font-family: Arial, Helvetica, sans-serif;
-    font-size: 13px; color: #222;
-    outline: none;
-    padding: 3px 2px;
-    width: 100%;
-    margin-bottom: 6px;
-    display: block;
+    font-size: 12px; color: #222;
+    outline: none; padding: 2px 2px; width: 100%;
   }
-  .empf-input:focus       { border-bottom-color: var(--hell); background: #f0f5ff; }
-  .empf-input::placeholder { color: #ccc; font-style: italic; font-size: 9.5px; }
+  .empf-field input:focus { border-bottom-color: var(--hell); background: #f0f5ff; }
+  .empf-field input::placeholder { color: #ccc; font-style: italic; font-size: 10px; }
 
   .einschr-box {
+    margin-top: 8px;
     border: 1px solid #e0e0e0; border-radius: 3px;
     padding: 4px 8px; background: #fafafa;
     display: flex; align-items: center; gap: 5px;
-    margin-top: 4px;
   }
   .einschr-box label { font-size: 9px; font-weight: bold; color: #999; white-space: nowrap; }
   .einschr-box input { font-size: 10px; flex: 1; }
 
-  /* ── HINWEISE ─────────────────────────────────────── */
+  /* ── HINWEISE ─────────────────────────────────── */
   .hints {
-    margin-top: 18px;
-    background: white; border-radius: 6px;
-    padding: 12px 16px;
-    border-left: 4px solid var(--blau);
+    margin-top: 18px; background: white; border-radius: 6px;
+    padding: 12px 16px; border-left: 4px solid var(--blau);
     max-width: 16cm;
   }
   .hints h3  { font-size: 12px; color: var(--blau); margin-bottom: 6px; }
@@ -271,25 +236,21 @@
   .hints li  { font-size: 11px; line-height: 1.5; margin-bottom: 3px; color: #444; }
   .hints li strong { color: var(--blau); }
 
-  /* ── DRUCK ────────────────────────────────────────── */
+  /* ── DRUCK ────────────────────────────────────── */
   @media print {
     @page { size: 210mm 297mm; margin: 10mm 0; }
     body  { background: white; padding: 0; }
     .controls, .hints, .cut-label { display: none !important; }
-    .card {
-      width: 160mm; height: 105mm;
-      border: 1.5px dashed #777 !important;
-      margin: 0 auto;
-      page-break-inside: avoid;
-    }
+    .card { width: 160mm; height: 105mm; border: 1.5px dashed #777 !important; margin: 0 auto; }
     .card + .card { margin-top: 10mm; }
-    input[type=text], .empf-input { background: transparent !important; }
+    input[type=text], textarea { background: transparent !important; }
+    textarea { border-color: #ddd !important; }
   }
 </style>
 </head>
 <body>
 
-<!-- ── STEUERLEISTE ─────────────────────────────────── -->
+<!-- STEUERLEISTE -->
 <div class="controls">
   <div>
     <h1>Abmeldung Fußballverein – Postkarte 16 × 10,5 cm</h1>
@@ -299,86 +260,49 @@
   <button class="btn-print" onclick="window.print()">🖨 Drucken</button>
 </div>
 
-<!-- ════════════════════════════════════════════════════
+<!-- ══════════════════════════════════════════════
      SEITE 1 – VORDERSEITE
-════════════════════════════════════════════════════ -->
-<div class="cut-label">Seite 1 – Vorderseite &nbsp;|&nbsp; Kündigungstext &nbsp;|&nbsp; 16,0 × 10,5 cm</div>
-<div class="card front">
+══════════════════════════════════════════════ -->
+<div class="cut-label">Seite 1 – Vorderseite &nbsp;|&nbsp; 16,0 × 10,5 cm</div>
+<div class="card">
+<div class="front">
 
-  <!-- Titel -->
   <div class="front-title">
     KÜNDIGUNG DER VEREINSMITGLIEDSCHAFT und ABMELDUNG VOM SPIELBETRIEB
   </div>
 
-  <!-- Mitglied | Verein -->
-  <div class="front-top">
-    <div>
-      <div class="col-head">Mitglied (Kind)</div>
-      <div class="field-row"><label>Name:</label>
-        <input id="kindName" type="text" placeholder="Vorname Nachname"></div>
-      <div class="field-row"><label>Geburtsdatum:</label>
-        <input id="kindGeb"  type="text" placeholder="TT.MM.JJJJ"></div>
-      <div class="field-row"><label>Straße, Nr.:</label>
-        <input id="kindStr"  type="text" placeholder="Musterstraße 1"></div>
-      <div class="field-row"><label>PLZ, Ort:</label>
-        <input id="kindOrt"  type="text" placeholder="12345 Musterstadt"></div>
-    </div>
-    <div>
-      <div class="col-head">An den Vorstand</div>
-      <div class="field-row"><label>Vereinsname:</label>
-        <input id="vereinName" type="text" placeholder="Vereinsname e.V."></div>
-      <div class="field-row"><label>Straße, Nr.:</label>
-        <input id="vereinStr"  type="text" placeholder="Vereinsstraße 1"></div>
-      <div class="field-row"><label>PLZ, Ort:</label>
-        <input id="vereinOrt"  type="text" placeholder="12345 Ort"></div>
-    </div>
+  <div class="front-textarea">
+    <textarea id="freitext" placeholder="Hier Text eingeben oder leer lassen zum handschriftlichen Ausfüllen …"></textarea>
   </div>
 
-  <!-- Kündigungstext -->
-  <div class="kuend-text">
-    Sehr geehrte Damen und Herren,<br>
-    wir kündigen hiermit als Erziehungsberechtigte die Mitgliedschaft unseres Kindes
-    <strong>fristgerecht zum</strong>
-    <input id="kuendDatum" type="text" placeholder="TT.MM.JJJJ">.
-    Gleichzeitig beantragen wir die <strong>Abmeldung vom Spielbetrieb</strong> beim
-    zuständigen Verband zum selben Termin. Wir bitten um schriftliche Bestätigung.</div>
-
-  <!-- Unterschriften -->
-  <div class="sig-header">Unterschriften beider Erziehungsberechtigter</div>
   <div class="sig-grid">
-
     <div class="sig-box">
       <div class="sig-title">Unterschrift Erziehungsberechtigter</div>
       <div class="field-row"><label>Name:</label>
-        <input id="eb1Name"  type="text" placeholder="Vorname Nachname"></div>
+        <input id="eb1Name" type="text" placeholder="Vorname Nachname"></div>
       <div class="field-row"><label>Ort, Datum:</label>
         <input id="eb1Datum" type="text" placeholder="Ort, TT.MM.JJJJ"></div>
       <div class="sig-line"><span class="sig-line-label">Unterschrift:</span></div>
     </div>
-
     <div class="sig-box">
       <div class="sig-title">Unterschrift Erziehungsberechtigter</div>
       <div class="field-row"><label>Name:</label>
-        <input id="eb2Name"  type="text" placeholder="Vorname Nachname"></div>
+        <input id="eb2Name" type="text" placeholder="Vorname Nachname"></div>
       <div class="field-row"><label>Ort, Datum:</label>
         <input id="eb2Datum" type="text" placeholder="Ort, TT.MM.JJJJ"></div>
       <div class="sig-line"><span class="sig-line-label">Unterschrift:</span></div>
     </div>
-
   </div>
 
-  <div class="versand-row">
-    Versandt als Einschreiben am:
-    <input id="versandDatum" type="text" placeholder="TT.MM.JJJJ">
-  </div>
+</div>
+</div>
 
-</div><!-- /front -->
-
-<!-- ════════════════════════════════════════════════════
+<!-- ══════════════════════════════════════════════
      SEITE 2 – RÜCKSEITE
-════════════════════════════════════════════════════ -->
-<div class="cut-label" style="margin-top:16px;">Seite 2 – Rückseite &nbsp;|&nbsp; Adresse &amp; Absender &nbsp;|&nbsp; 16,0 × 10,5 cm</div>
-<div class="card back">
+══════════════════════════════════════════════ -->
+<div class="cut-label" style="margin-top:18px;">Seite 2 – Rückseite &nbsp;|&nbsp; 16,0 × 10,5 cm</div>
+<div class="card">
+<div class="back">
 
   <!-- LINKE SPALTE: Absender -->
   <div class="back-left">
@@ -389,10 +313,7 @@
       <input id="absStr"  type="text" placeholder="Musterstraße 1"></div>
     <div class="field-row"><label>PLZ, Ort:</label>
       <input id="absOrt"  type="text" placeholder="12345 Musterstadt"></div>
-
-    <div class="betreff">
-      <div class="betreff-label">Betreff</div>
-      <div class="betreff-text">Kündigung Vereinsmitgliedschaft &amp; Abmeldung Spielbetrieb</div>
+    <div class="bottom">
       <div class="einlieferung">Einlieferungsbeleg aufbewahren!</div>
     </div>
   </div>
@@ -402,31 +323,40 @@
 
   <!-- RECHTE SPALTE: Empfänger -->
   <div class="back-right">
+    <div class="stamp-row">
+      <div class="stamp-box"><span>Briefmarke</span><span>Einschreiben</span></div>
+    </div>
 
-    <div class="back-right-top">
-      <div class="stamp-row">
-        <div class="stamp-box"><span>Briefmarke</span><span>Einschreiben</span></div>
+    <div class="section-head">Empfänger</div>
+    <div class="empf-row">
+      <div class="empf-field">
+        <label>Name des Vereins</label>
+        <input id="empZ1" type="text" placeholder="">
+      </div>
+      <div class="empf-field">
+        <label>Empfänger</label>
+        <input id="empZ2" type="text" placeholder="">
+      </div>
+      <div class="empf-field">
+        <label>Str. Hausnr. / Postfach</label>
+        <input id="empZ3" type="text" placeholder="">
+      </div>
+      <div class="empf-field">
+        <label>PLZ, Ort</label>
+        <input id="empZ4" type="text" placeholder="">
       </div>
     </div>
 
-    <div class="back-right-addr">
-      <div class="section-head">Empfänger</div>
-      <input id="empZ1" class="empf-input" type="text" placeholder="Name des Vereins">
-      <input id="empZ2" class="empf-input" type="text" placeholder="Empfänger">
-      <input id="empZ3" class="empf-input" type="text" placeholder="Str. Hausnr. / Postfach">
-      <input id="empZ4" class="empf-input" type="text" placeholder="PLZ, Ort">
-
-      <div class="einschr-box">
-        <label>Einschreiben-Nr.:</label>
-        <input id="einschNr" type="text" placeholder="RR 000 000 000 DE">
-      </div>
+    <div class="einschr-box">
+      <label>Einschreiben-Nr.:</label>
+      <input id="einschNr" type="text" placeholder="RR 000 000 000 DE">
     </div>
-
   </div>
 
-</div><!-- /back -->
+</div>
+</div>
 
-<!-- ── HINWEISE ─────────────────────────────────────── -->
+<!-- HINWEISE -->
 <div class="hints">
   <h3>Hinweise</h3>
   <ol>
@@ -440,7 +370,7 @@
 <script>
   function clearAll() {
     if (!confirm('Alle Felder leeren?')) return;
-    document.querySelectorAll('input[type=text]').forEach(i => i.value = '');
+    document.querySelectorAll('input[type=text], textarea').forEach(i => i.value = '');
   }
 </script>
 </body>
