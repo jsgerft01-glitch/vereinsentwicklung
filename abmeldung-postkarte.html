@@ -72,16 +72,7 @@
   input[type=text]:focus     { border-bottom-color: var(--hell); background: #f0f5ff; }
   input[type=text]::placeholder { color: #ccc; font-style: italic; font-size: 10px; }
 
-  textarea {
-    border: 1px solid #e8eae0; border-radius: 3px;
-    background: #fafbff;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 11px; color: #222;
-    outline: none; resize: none; padding: 6px 8px;
-    line-height: 1.6; width: 100%;
-  }
-  textarea:focus { border-color: var(--hell); background: #f0f5ff; }
-  textarea::placeholder { color: #ccc; font-style: italic; }
+
 
   /* ══════════════════════════════════════════════
      SEITE 1 – VORDERSEITE
@@ -102,12 +93,28 @@
     margin-bottom: 10px;
   }
 
-  .front-textarea {
+  .kuend-block {
     flex: 1;
+    font-size: 11px;
+    line-height: 1.65;
     margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+    padding: 7px 10px;
+    background: #f7f8fc;
+    border-left: 3px solid var(--blau);
+    border-radius: 0 3px 3px 0;
   }
-  .front-textarea textarea {
-    height: 100%;
+  .kuend-block p { margin: 0; }
+  .name-row { display: flex; align-items: baseline; gap: 4px; }
+  .name-row input { flex: 1; font-size: 11px; }
+  .name-hint {
+    font-size: 8.5px; color: #aaa;
+    display: flex; justify-content: space-between;
+    padding: 0 0 4px 128px;
+    margin-bottom: 2px;
   }
 
   /* Unterschriften */
@@ -243,8 +250,8 @@
     .controls, .hints, .cut-label { display: none !important; }
     .card { width: 160mm; height: 105mm; border: 1.5px dashed #777 !important; margin: 0 auto; }
     .card + .card { margin-top: 10mm; }
-    input[type=text], textarea { background: transparent !important; }
-    textarea { border-color: #ddd !important; }
+    input[type=text] { background: transparent !important; }
+
   }
 </style>
 </head>
@@ -271,8 +278,19 @@
     KÜNDIGUNG DER VEREINSMITGLIEDSCHAFT und ABMELDUNG VOM SPIELBETRIEB
   </div>
 
-  <div class="front-textarea">
-    <textarea id="freitext" placeholder="Hier Text eingeben oder leer lassen zum handschriftlichen Ausfüllen …"></textarea>
+  <div class="kuend-block">
+    <div class="name-row">
+      <p>Hiermit melde ich mich / mein Kind&nbsp;</p>
+      <input id="mitgliedName" type="text" placeholder="Name, Vorname, Geb.Datum">
+    </div>
+    <div class="name-hint">
+      <span>Name</span><span>Vorname</span><span>Geb.Datum</span>
+    </div>
+    <p>mit sofortiger Wirkung vom Spielbetrieb beim zuständigen Verband und</p>
+    <p>fristgerecht zum <strong>30.06.2026</strong> aus dem Verein ab.</p>
+    <p>Ferner widerrufe ich ein bestehendes SEPA-Mandat mit sofortiger Wirkung.</p>
+    <p>&nbsp;</p>
+    <p>Wir bitten um schriftliche Bestätigung der Kündigung.</p>
   </div>
 
   <div class="sig-grid">
@@ -370,7 +388,7 @@
 <script>
   function clearAll() {
     if (!confirm('Alle Felder leeren?')) return;
-    document.querySelectorAll('input[type=text], textarea').forEach(i => i.value = '');
+    document.querySelectorAll('input[type=text]').forEach(i => i.value = '');
   }
 </script>
 </body>
